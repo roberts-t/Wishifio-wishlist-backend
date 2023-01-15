@@ -1,0 +1,11 @@
+node_modules
+.idea
+build
+logs
+dist
+npm-debug.log
+.nyc
+.env
+.env.production
+.env.local
+.DS_Store
