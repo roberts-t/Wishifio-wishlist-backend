@@ -10,6 +10,11 @@ const user = async (req: Request, res: Response) => {
 }
 
 const signIn = async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     passport.authenticate('local', {}, (err: Error | undefined, user: Express.User, info: { message: string }) => {
         if (err) {
             return res.status(500).json({ errorCode: 'AUTH_ERROR' });
@@ -48,26 +53,26 @@ const logout = async (req: Request, res: Response) => {
 const signUp = async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(400).json({errors: errors.array()});
     }
 
     const email = req.body.email;
     const password = req.body.password;
     const username = req.body.username;
 
-    const user = await User.findOne({ email: email });
-    if (user) return res.status(400).json({ errorCode: "USER_EXISTS" });
+    const user = await User.findOne({email: email});
+    if (user) return res.status(400).json({errorCode: "USER_EXISTS"});
     else {
-        await bcrypt.hash(password, 10, async (err: Error | undefined, hashedPassword: string) => {
-            if (err) return res.status(500).json({ errorCode: "REGISTER_ERROR" });
+        return await bcrypt.hash(password, 10, async (err: Error | undefined, hashedPassword: string) => {
+            if (err) return res.status(500).json({errorCode: "REGISTER_ERROR"});
             const newUser = new User({
                 email: email,
                 password: hashedPassword,
                 username: username
             });
             newUser.save((err: any) => {
-                if (err) return res.status(500).json({ errorCode: "REGISTER_ERROR" });
-                else return res.status(200).json({ id: newUser._id });
+                if (err) return res.status(500).json({errorCode: "REGISTER_ERROR"});
+                else return res.status(200).json({id: newUser._id});
             });
         });
     }

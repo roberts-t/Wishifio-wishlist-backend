@@ -1,10 +1,8 @@
-import { Types } from 'mongoose';
-
 export {}
 declare global {
     namespace Express {
         interface User {
-            id: Types.ObjectId;
+            id: string;
             username: string;
             email: string;
             role: string;

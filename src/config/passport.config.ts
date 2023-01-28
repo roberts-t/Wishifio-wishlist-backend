@@ -14,7 +14,6 @@ module.exports = function (passport: PassportStatic) {
         }, async (email: string, password: string, callback: Function) => {
             try {
                 await User.findOne({email: email}).then(async (user: IUser) => {
-                    console.log(user);
                     if (!user) {
                         return callback(null, false, {message: 'AUTH_INCORRECT'})
                     }
@@ -28,7 +27,7 @@ module.exports = function (passport: PassportStatic) {
                             return callback(null, false, {message: 'AUTH_INCORRECT'})
                         }
                     });
-                }).catch((err: Error) => {
+                }).catch(() => {
                     return callback(null, false, {message: 'AUTH_ERROR'});
                 });
             } catch (err) {
@@ -44,7 +43,7 @@ module.exports = function (passport: PassportStatic) {
     passport.deserializeUser(function (id, done) {
         User.findById(id).then(function (user: IUser) {
             const userInfo = {
-                id: user._id,
+                id: user._id.toHexString(),
                 username: user.username,
                 email: user.email,
                 role: user.role,

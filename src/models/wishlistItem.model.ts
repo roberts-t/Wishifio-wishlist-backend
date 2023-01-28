@@ -32,7 +32,7 @@ const WishlistItemSchema: Schema = new Schema({
             type: String,
             required: false
         },
-        notes: {
+        note: {
             type: String,
             required: false,
             maxlength: 500,
