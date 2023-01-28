@@ -11,7 +11,7 @@ const fs = require('fs');
 const getAllWishlists = async (req: Request, res: Response) => {
     const user = req.user;
     try {
-        let wishlists = await Wishlist.find({createdBy: user!.id}, 'description title image');
+        let wishlists = await Wishlist.find({createdBy: user!.id}, 'description title image hash');
         return res.status(200).json(wishlists);
     } catch (err) {
         return res.status(500).json({ errorCode: "WISHLIST_ERROR" });
@@ -53,9 +53,9 @@ const createWishlist = async (req: Request, res: Response) => {
 }
 
 const readWishlist = async (req: Request, res: Response) => {
-    const wishlistId = req.params.wishlistId;
+    const wishlistHash = req.params.hash;
     const user = req.user;
-    const wishlistRes = await wlHelper.getWishlist(wishlistId, user!.id);
+    const wishlistRes = await wlHelper.getWishlist(wishlistHash, user);
 
     if (wishlistRes.error) {
         return res.status(wishlistRes.error.errorCode).json({ errorCode: wishlistRes.error.errorMsg });
@@ -72,12 +72,12 @@ const updateWishlist = async (req: Request, res: Response) => {
         return res.status(400).json({errors: errors.array()});
     }
     try {
-        const wishlistId = req.params.wishlistId;
+        const wishlistHash = req.params.hash;
         const title = req.body.title;
         const description = req.body.description;
         const image = req?.files?.image as UploadedFile;
         const user = req.user;
-        const wishlistRes = await wlHelper.getWishlist(wishlistId, user!.id);
+        const wishlistRes = await wlHelper.getWishlist(wishlistHash, user);
 
         if (wishlistRes.error) {
             return res.status(wishlistRes.error.errorCode).json({ errorCode: wishlistRes.error.errorMsg });
@@ -115,9 +115,9 @@ const updateWishlist = async (req: Request, res: Response) => {
 
 const deleteWishlist = async (req: Request, res: Response) => {
     try {
-        const wishlistId = req.params.wishlistId;
+        const wishlistHash = req.params.hash;
         const user = req.user;
-        const wishlistRes = await wlHelper.getWishlist(wishlistId, user);
+        const wishlistRes = await wlHelper.getWishlist(wishlistHash, user);
 
         if (wishlistRes.error) {
             return res.status(wishlistRes.error.errorCode).json({ errorCode: wishlistRes.error.errorMsg });

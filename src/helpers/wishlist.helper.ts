@@ -68,11 +68,14 @@ const getWlItem = async (wishlistId: string, wishlistItemId: string, user: any) 
     }
 }
 
-const getWishlist = async (wishlistId: string, user: any) => {
+const getWishlist = async (wishlistHash: string, user: any) => {
     let wishlist: HydratedDocument<IWishlist>;
-
+    console.log(wishlistHash, user!.id);
     try {
-        wishlist = await Wishlist.findOne({ _id: wishlistId, createdBy: user!.id,  });
+        wishlist = await Wishlist.findOne({ hash: wishlistHash, createdBy: user!.id },
+            'description hash image items settings title createdBy')
+            .populate('items')
+            .populate('createdBy', 'username');
         if (!wishlist) {
             return {
                 error: {
