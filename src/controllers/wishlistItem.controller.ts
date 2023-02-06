@@ -15,9 +15,9 @@ const createWishListItem = async (req: Request, res: Response) => {
     }
 
     try {
-        const { wishlistId, name, subtitle, price, url, note, user, image } = wlHelper.getWlItemRequestValues(req);
+        const { wishlistHash, name, subtitle, price, url, note, user, image } = wlHelper.getWlItemRequestValues(req);
 
-        const wishlist = await Wishlist.findOne({ _id: wishlistId, createdBy: user!.id });
+        const wishlist = await Wishlist.findOne({ hash: wishlistHash, createdBy: user!.id });
         if (!wishlist) {
             return res.status(400).json({ errorCode: 'WISHLIST_NOT_FOUND' });
         }
@@ -25,7 +25,7 @@ const createWishListItem = async (req: Request, res: Response) => {
         let imageFileName = "";
 
         if (image) {
-            imageFileName = wishlistId + '-item-' + await nanoid(11) + '.' + image.mimetype.split('/')[1];
+            imageFileName = wishlistHash + '-item-' + await nanoid(11) + '.' + image.mimetype.split('/')[1];
             const fileUploaded = wlHelper.uploadWlImage(image, imageFileName);
             if (!fileUploaded) {
                 return res.status(500).json({ errorCode: 'IMAGE_UPLOAD_ERROR' });
@@ -51,11 +51,11 @@ const createWishListItem = async (req: Request, res: Response) => {
 
 const readWishListItem = async (req: Request, res: Response) => {
     try {
-        const wishlistId = req.params.wishlistId;
+        const wishlistHash = req.params.hash;
         const wishlistItemId = req.params.wishlistItemId;
         const user = req.user;
 
-        const wishlist = await Wishlist.findOne({_id: wishlistId, createdBy: user!.id, 'items._id': wishlistItemId});
+        const wishlist = await Wishlist.findOne({hash: wishlistHash, createdBy: user!.id, 'items._id': wishlistItemId});
         if (!wishlist) {
             return res.status(400).json({errorCode: 'ITEM_NOT_FOUND'});
         }
@@ -77,10 +77,10 @@ const updateWishListItem = async (req: Request, res: Response) => {
     }
 
     try {
-        const {wishlistId, name, subtitle, price, url, note, user, image} = wlHelper.getWlItemRequestValues(req);
+        const {wishlistHash, name, subtitle, price, url, note, user, image} = wlHelper.getWlItemRequestValues(req);
         const wishlistItemId = req.params.wishlistItemId;
 
-        const wishlist = await Wishlist.findOne({_id: wishlistId, createdBy: user!.id,});
+        const wishlist = await Wishlist.findOne({hash: wishlistHash, createdBy: user!.id,});
         if (!wishlist) {
             return res.status(400).json({errorCode: 'ITEM_NOT_FOUND'});
         }
@@ -105,7 +105,7 @@ const updateWishListItem = async (req: Request, res: Response) => {
                 }
             }
 
-            const imageFileName = wishlistId + '-item-' + await nanoid(11) + '.' + image.mimetype.split('/')[1];
+            const imageFileName = wishlistHash + '-item-' + await nanoid(11) + '.' + image.mimetype.split('/')[1];
             const fileUploaded = await wlHelper.uploadWlImage(image, imageFileName);
             if (!fileUploaded) {
                 return res.status(500).json({errorCode: 'IMAGE_UPLOAD_ERROR'});
@@ -122,11 +122,11 @@ const updateWishListItem = async (req: Request, res: Response) => {
 
 const deleteWishListItem = async (req: Request, res: Response) => {
     try {
-        const wishlistId = req.params.wishlistId;
+        const wishlistHash = req.params.hash;
         const wishlistItemId = req.params.wishlistItemId;
         const user = req.user;
 
-        const wishlist = await Wishlist.findOne({_id: wishlistId, createdBy: user!.id, 'items._id': wishlistItemId});
+        const wishlist = await Wishlist.findOne({hash: wishlistHash, createdBy: user!.id, 'items._id': wishlistItemId});
         if (!wishlist) {
             return res.status(400).json({errorCode: 'ITEM_NOT_FOUND'});
         }

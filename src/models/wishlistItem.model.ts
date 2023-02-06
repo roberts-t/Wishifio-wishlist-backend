@@ -36,8 +36,19 @@ const WishlistItemSchema: Schema = new Schema({
             type: String,
             required: false,
             maxlength: 500,
-        }
+        },
+    }, {
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true },
     }
 );
+
+WishlistItemSchema.virtual('imageUrl').get(function() {
+    if (this.image) {
+        return `/static/images/user/${this.image}`;
+    } else {
+        return '/static/images/default/wishlist-image.jpg';
+    }
+});
 
 module.exports = mongoose.model<IWishlistItem>('WishlistItem', WishlistItemSchema);

@@ -46,22 +46,22 @@ router.delete('/wishlist/:hash', [userMiddleware], wishlistControllers.deleteWis
 
 // Wishlist Item Routes
 router.post(
-    '/wishlist/:wishlistId/item/create',
+    '/wishlist/:hash/item/create',
     [userMiddleware, wishlistItemValidator.createWishlistItemValidator()],
     wishlistItemControllers.createWishListItem
 );
 router.get(
-    '/wishlist/:wishlistId/item/:wishlistItemId',
+    '/wishlist/:hash/item/:wishlistItemId',
     [userMiddleware],
     wishlistItemControllers.readWishListItem
 );
 router.post(
-    '/wishlist/:wishlistId/item/:wishlistItemId/update',
+    '/wishlist/:hash/item/:wishlistItemId/update',
     [userMiddleware, wishlistItemValidator.createWishlistItemValidator()],
     wishlistItemControllers.updateWishListItem
 );
-router.post(
-    '/wishlist/:wishlistId/item/:wishlistItemId/delete',
+router.delete(
+    '/wishlist/:hash/item/:wishlistItemId/',
     [userMiddleware],
     wishlistItemControllers.deleteWishListItem
 );

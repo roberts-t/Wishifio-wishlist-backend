@@ -6,7 +6,7 @@ import { HydratedDocument } from 'mongoose';
 import { IWishlistItem } from '../models/wishlistItem.model';
 
 const getWlItemRequestValues = (req: Request) => {
-    const wishlistId = req.params.wishlistId;
+    const wishlistHash = req.params.hash;
     const name = req.body.name;
     const subtitle = req.body.subtitle;
     const price = req.body.price;
@@ -16,7 +16,7 @@ const getWlItemRequestValues = (req: Request) => {
     const image = req?.files?.image as UploadedFile;
 
     return {
-        wishlistId,
+        wishlistHash,
         name,
         subtitle,
         price,
@@ -70,7 +70,6 @@ const getWlItem = async (wishlistId: string, wishlistItemId: string, user: any) 
 
 const getWishlist = async (wishlistHash: string, user: any) => {
     let wishlist: HydratedDocument<IWishlist>;
-    console.log(wishlistHash, user!.id);
     try {
         wishlist = await Wishlist.findOne({ hash: wishlistHash, createdBy: user!.id },
             'description hash image items settings title createdBy')

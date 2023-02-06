@@ -2,24 +2,22 @@ import { check, body, param } from 'express-validator';
 
 const createWishlistItemValidator = () => {
     return [
-        param('wishlistId')
+        param('hash')
             .trim()
-            .notEmpty().withMessage('WISHLIST_ID_REQ'),
+            .notEmpty().withMessage('WISHLIST_HASH_REQ'),
         body('name')
             .trim()
             .isString().notEmpty().withMessage('NAME_REQ').bail()
             .isLength({ min: 1, max: 50 }).withMessage('NAME_LEN'),
         body('subtitle')
             .optional().trim()
-            .isString().notEmpty().withMessage('SUBTITLE_REQ').bail()
             .isLength({ min: 1, max: 200 }).withMessage('SUBTITLE_LEN'),
         body('price')
-            .optional().trim()
+            .trim()
             .isString().notEmpty().withMessage('PRICE_REQ').bail()
             .isLength({ min: 1, max: 10 }).withMessage('PRICE_LEN'),
         body('url')
             .optional().trim()
-            .isString().notEmpty().withMessage('URL_REQ').bail()
             .isURL().withMessage('URL_INVALID'),
         body('note')
             .optional().trim()

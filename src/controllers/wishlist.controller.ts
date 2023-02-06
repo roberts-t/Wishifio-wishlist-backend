@@ -62,8 +62,12 @@ const readWishlist = async (req: Request, res: Response) => {
     }
 
     const wishlist = wishlistRes.wishlist;
+    const isOwner = wishlist.createdBy._id.toString() === user!.id;
 
-    return res.status(200).json(wishlist);
+    return res.status(200).json({
+        wishlist: wishlist,
+        isOwner: isOwner
+    });
 }
 
 const updateWishlist = async (req: Request, res: Response) => {
