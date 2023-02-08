@@ -10,20 +10,20 @@ const createWishlistItemValidator = () => {
             .isString().notEmpty().withMessage('NAME_REQ').bail()
             .isLength({ min: 1, max: 50 }).withMessage('NAME_LEN'),
         body('subtitle')
-            .optional().trim()
+            .optional({checkFalsy: true}).trim()
             .isLength({ min: 1, max: 200 }).withMessage('SUBTITLE_LEN'),
         body('price')
             .trim()
             .isString().notEmpty().withMessage('PRICE_REQ').bail()
             .isLength({ min: 1, max: 10 }).withMessage('PRICE_LEN'),
         body('url')
-            .optional().trim()
+            .optional({checkFalsy: true}).trim()
             .isURL().withMessage('URL_INVALID'),
         body('note')
-            .optional().trim()
+            .optional({checkFalsy: true}).trim()
             .isLength({ min: 1, max: 500 }).withMessage('NOTES_LEN'),
         check('image')
-            .optional()
+            .optional({checkFalsy: true})
             .custom((value, { req }) => {
                 if (!req?.files?.image) throw new Error('NOT_IMAGE');
                 if (req.files.image instanceof Array) throw new Error('IMAGE_COUNT');
