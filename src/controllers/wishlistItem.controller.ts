@@ -79,6 +79,7 @@ const updateWishListItem = async (req: Request, res: Response) => {
     try {
         const {wishlistHash, name, subtitle, price, url, note, user, image} = wlHelper.getWlItemRequestValues(req);
         const wishlistItemId = req.params.wishlistItemId;
+        const deleteImage = req.body.deleteImage;
 
         const wishlist = await Wishlist.findOne({hash: wishlistHash, createdBy: user!.id,});
         if (!wishlist) {
@@ -95,14 +96,16 @@ const updateWishListItem = async (req: Request, res: Response) => {
         wishlistItem.url = url;
         wishlistItem.note = note;
 
-        if (image) {
+        if (deleteImage) {
+            if (wishlistItem.image) {
+                await wlHelper.deleteWlImage(process.env.USER_IMAGE_PATH + wishlistItem.image);
+                wishlistItem.image = null;
+            }
+        }
+        else if (image) {
             // Delete old image
             if (wishlistItem.image) {
-                try {
-                    await fs.promises.unlink(process.env.USER_IMAGE_PATH + wishlistItem.image);
-                } catch (err) {
-                    // TODO: Handle error by logging
-                }
+                await wlHelper.deleteWlImage(process.env.USER_IMAGE_PATH + wishlistItem.image);
             }
 
             const imageFileName = wishlistHash + '-item-' + await nanoid(11) + '.' + image.mimetype.split('/')[1];
