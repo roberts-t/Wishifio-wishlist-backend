@@ -4,6 +4,7 @@ const Wishlist = require('../models/wishlist.model');
 import { IWishlist } from '../models/wishlist.model';
 import { HydratedDocument } from 'mongoose';
 import { IWishlistItem } from '../models/wishlistItem.model';
+import fs from "fs";
 
 const getWlItemRequestValues = (req: Request) => {
     const wishlistHash = req.params.hash;
@@ -98,9 +99,18 @@ const getWishlist = async (wishlistHash: string, user: any) => {
     }
 }
 
+const deleteWlImage = async (imagePath: string) => {
+    try {
+        await fs.promises.unlink(imagePath);
+    } catch (err) {
+        // TODO: Handle error by logging
+    }
+}
+
 module.exports = {
     getWlItemRequestValues,
     uploadWlImage,
     getWlItem,
-    getWishlist
+    getWishlist,
+    deleteWlImage
 }

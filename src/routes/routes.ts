@@ -55,8 +55,8 @@ router.get(
     [userMiddleware],
     wishlistItemControllers.readWishListItem
 );
-router.post(
-    '/wishlist/:hash/item/:wishlistItemId/update',
+router.put(
+    '/wishlist/:hash/item/:wishlistItemId/',
     [userMiddleware, wishlistItemValidator.createWishlistItemValidator()],
     wishlistItemControllers.updateWishListItem
 );
