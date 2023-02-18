@@ -69,18 +69,22 @@ const getWlItem = async (wishlistId: string, wishlistItemId: string, user: any) 
     }
 }
 
-const getWishlist = async (wishlistHash: string, user: any) => {
+const getWishlist = async (wishlistHash: string, user: any, matchUser: boolean = true) => {
     let wishlist: HydratedDocument<IWishlist>;
+    let query: any = { hash: wishlistHash, createdBy: user?.id };
+    if (!matchUser) {
+        query = { hash: wishlistHash };
+    }
     try {
-        wishlist = await Wishlist.findOne({ hash: wishlistHash, createdBy: user!.id },
+        wishlist = await Wishlist.findOne(query,
             'description hash image items settings title createdBy')
             .populate('items')
             .populate('createdBy', 'username');
         if (!wishlist) {
             return {
                 error: {
-                    errorCode: 400,
-                    errorMsg: 'WISHLIST_NOT_FOUND'
+                    errorCode: 404,
+                    errorMsg: 'NOT_FOUND'
                 },
             };
         }

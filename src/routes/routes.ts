@@ -37,11 +37,16 @@ router.post(
     wishlistControllers.createWishlist
 );
 router.get('/wishlists', [userMiddleware], wishlistControllers.getAllWishlists);
-router.get('/wishlist/:hash', [userMiddleware], wishlistControllers.readWishlist);
+router.get('/wishlist/:hash', wishlistControllers.readWishlist);
 router.put('/wishlist/:hash/',
     [userMiddleware, wishlistValidator.createWishlistValidator()],
     wishlistControllers.updateWishlist);
 router.delete('/wishlist/:hash', [userMiddleware], wishlistControllers.deleteWishlist);
+router.put(
+    '/wishlist/:hash/share',
+    [userMiddleware, wishlistValidator.updateWishlistVisibilityValidator()],
+    wishlistControllers.updateWishlistVisibility
+);
 
 
 // Wishlist Item Routes

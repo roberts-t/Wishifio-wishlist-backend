@@ -17,6 +17,31 @@ const getAllWishlists = async (req: Request, res: Response) => {
         return res.status(500).json({ errorCode: "WISHLIST_ERROR" });
     }
 }
+
+const updateWishlistVisibility = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()});
+    }
+    try {
+        const user = req.user;
+        const wishlistHash = req.params.hash;
+        const visibility = req.body.visibility;
+        const wishlistRes = await wlHelper.getWishlist(wishlistHash, user);
+
+        if (wishlistRes.error) {
+            return res.status(wishlistRes.error.errorCode).json({errorCode: wishlistRes.error.errorMsg});
+        }
+
+        const wishlist = wishlistRes.wishlist;
+        wishlist.settings.visibility = visibility;
+        await wishlist.save();
+        return res.sendStatus(200);
+    } catch (err) {
+        return res.status(500).json({ errorCode: "WISHLIST_ERROR" });
+    }
+
+}
 const createWishlist = async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -55,14 +80,20 @@ const createWishlist = async (req: Request, res: Response) => {
 const readWishlist = async (req: Request, res: Response) => {
     const wishlistHash = req.params.hash;
     const user = req.user;
-    const wishlistRes = await wlHelper.getWishlist(wishlistHash, user);
+    const wishlistRes = await wlHelper.getWishlist(wishlistHash, user, false);
 
     if (wishlistRes.error) {
         return res.status(wishlistRes.error.errorCode).json({ errorCode: wishlistRes.error.errorMsg });
     }
 
     const wishlist = wishlistRes.wishlist;
-    const isOwner = wishlist.createdBy._id.toString() === user!.id;
+    const isOwner = wishlist.createdBy._id.toString() === user?.id;
+    const visibility = wishlist?.settings?.visibility;
+    if ((!visibility || visibility === 'private') && !isOwner) {
+        return res.status(404).json({ errorCode: "NOT_FOUND" });
+    } else if (visibility === 'restricted' && !user) {
+        return res.status(401).json({ errorCode: "UNAUTHORIZED" });
+    }
 
     return res.status(200).json({
         wishlist: wishlist,
@@ -160,5 +191,6 @@ module.exports = {
     readWishlist,
     updateWishlist,
     deleteWishlist,
-    getAllWishlists
+    getAllWishlists,
+    updateWishlistVisibility
 }

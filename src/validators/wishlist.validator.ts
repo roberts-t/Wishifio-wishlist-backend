@@ -1,4 +1,4 @@
-import { check, body } from 'express-validator';
+import { check, body, param } from 'express-validator';
 
 const createWishlistValidator = () => {
     return [
@@ -25,6 +25,19 @@ const createWishlistValidator = () => {
     ];
 }
 
+const updateWishlistVisibilityValidator = () => {
+    return [
+        param('hash')
+            .trim()
+            .notEmpty().withMessage('WISHLIST_HASH_REQ'),
+        body('visibility')
+            .trim()
+            .isString().notEmpty().withMessage('VISIBILITY_INVALID').bail()
+            .isIn(['public', 'private', 'restricted']).withMessage('VISIBILITY_INVALID')
+    ];
+}
+
 module.exports = {
     createWishlistValidator,
+    updateWishlistVisibilityValidator
 }
