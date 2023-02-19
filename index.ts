@@ -36,14 +36,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({
     proxy: (process.env.NODE_ENV !== "DEV"),
     secret: process.env.SESSION_SECRET,
-    resave: false,
+    resave: true,
+    rolling: true,
     saveUninitialized: false,
     store: MongoStore.create({
         mongoUrl: process.env.DB_URI,
     }),
     cookie: {
-        // 30 mins in ms
-        maxAge: 1800000,
+        // 20 mins in ms
+        maxAge: 20 * (60 * 1000),
         httpOnly: true,
         sameSite: true,
         secure: (process.env.NODE_ENV !== "DEV")

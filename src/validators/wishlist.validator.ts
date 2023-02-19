@@ -11,6 +11,7 @@ const createWishlistValidator = () => {
             .isString().notEmpty().withMessage('DESCRIPTION_REQ').bail()
             .isLength({ min: 1, max: 500 }).withMessage('DESCRIPTION_LEN'),
         check('image')
+            .optional({checkFalsy: true})
             .custom((value, { req }) => {
                 if (!req?.files?.image) throw new Error('NOT_IMAGE');
                 if (req.files.image instanceof Array) throw new Error('IMAGE_COUNT');
