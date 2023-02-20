@@ -57,10 +57,11 @@ const WishlistSchema: Schema = new Schema({
         default: [],
     },
     settings: {
-        isShared: {
-            type: Boolean,
+        visibility: {
+            type: String,
             required: true,
-            default: false
+            enum: ['private', 'public', 'restricted'],
+            default: 'private',
         },
     }
     }, {
