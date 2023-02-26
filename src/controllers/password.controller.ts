@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { nanoid } from 'nanoid/async';
+
 const User = require('../models/user.model');
 const ResetPassword = require('../models/resetPassword.model');
 const bcrypt = require('bcrypt');
@@ -59,7 +60,31 @@ const resetPassword = async (req: Request, res: Response) => {
     }
 }
 
+const changePassword = async (req: Request, res: Response) => {
+    const user = req.user;
+    const oldPassword = req.body.password;
+    const newPassword = req.body.newPassword;
+
+    try {
+        const dbUser = await User.findById(user?.id);
+        if (!dbUser) {
+            return res.status(403).json({ errorCode: 'NO_PERMISSION' });
+        }
+        const passValid = await bcrypt.compare(oldPassword, dbUser.password);
+        if (!passValid) {
+            return res.status(400).json({ errorCode: 'INVALID_PASSWORD' });
+        }
+
+        dbUser.password = await bcrypt.hash(newPassword, 10);
+        await dbUser.save();
+        return res.sendStatus(200);
+    } catch (e) {
+        return res.status(500).json({ errorCode: 'SERVER_ERROR' });
+    }
+}
+
 module.exports = {
     requestResetPassword,
-    resetPassword
+    resetPassword,
+    changePassword
 }
