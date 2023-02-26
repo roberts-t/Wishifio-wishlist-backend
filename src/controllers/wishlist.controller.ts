@@ -112,6 +112,7 @@ const updateWishlist = async (req: Request, res: Response) => {
         const description = req.body.description;
         const image = req?.files?.image as UploadedFile;
         const user = req.user;
+        const deleteImage = req.body.deleteImage;
         const wishlistRes = await wlHelper.getWishlist(wishlistHash, user);
 
         if (wishlistRes.error) {
@@ -123,7 +124,13 @@ const updateWishlist = async (req: Request, res: Response) => {
         wishlist.title = title;
         wishlist.description = description;
 
-        if (image) {
+        if (deleteImage) {
+            if (wishlist.image) {
+                await fs.promises.unlink(process.env.USER_IMAGE_PATH + wishlist.image);
+                wishlist.image = null;
+            }
+        }
+        else if (image) {
             if (wishlist.image) {
                 // Delete old image
                 try {
