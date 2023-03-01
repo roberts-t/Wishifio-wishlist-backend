@@ -23,7 +23,7 @@ const resetPasswordValidator = () => {
             .isLength({ min: 6 }).withMessage('PASSWORD_MIN'),
         body('c_password')
             .trim()
-            .isString().notEmpty().withMessage('C_PASSWORD_REQ').bail()
+            .isString().notEmpty().withMessage('PASSWORD_MATCH').bail()
             .custom((value, { req }) => {
                 if (value !== req.body.password) {
                     throw new Error('PASSWORD_MATCH');
@@ -33,7 +33,31 @@ const resetPasswordValidator = () => {
     ];
 }
 
+const changePasswordValidator = () => {
+    return [
+        body('password')
+            .trim()
+            .isString().notEmpty().withMessage('INVALID_PASSWORD').bail()
+            .isLength({ min: 6 }).withMessage('INVALID_PASSWORD'),
+        body('newPassword')
+            .trim()
+            .isString().notEmpty().withMessage('NEW_PASSWORD_REQ').bail()
+            .isLength({ min: 6 }).withMessage('NEW_PASSWORD_MIN'),
+        body('newPasswordConfirm')
+            .trim()
+            .isString().notEmpty().withMessage('PASSWORD_MATCH').bail()
+            .custom((value, { req }) => {
+                if (value !== req.body.newPassword) {
+                    throw new Error('PASSWORD_MATCH');
+                }
+                return true;
+            })
+    ];
+
+}
+
 module.exports = {
     requestPasswordValidator,
-    resetPasswordValidator
+    resetPasswordValidator,
+    changePasswordValidator,
 }
