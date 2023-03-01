@@ -25,7 +25,7 @@ const createWishListItem = async (req: Request, res: Response) => {
         let imageFileName = "";
 
         if (image) {
-            imageFileName = wishlistHash + '-item-' + await nanoid(11) + '.' + image.mimetype.split('/')[1];
+            imageFileName = wishlistHash + '-item-' + await nanoid(11) + '.jpeg';
             const fileUploaded = wlHelper.uploadWlImage(image, imageFileName);
             if (!fileUploaded) {
                 return res.status(500).json({ errorCode: 'IMAGE_UPLOAD_ERROR' });
@@ -108,7 +108,7 @@ const updateWishListItem = async (req: Request, res: Response) => {
                 await wlHelper.deleteWlImage(process.env.USER_IMAGE_PATH + wishlistItem.image);
             }
 
-            const imageFileName = wishlistHash + '-item-' + await nanoid(11) + '.' + image.mimetype.split('/')[1];
+            const imageFileName = wishlistHash + '-item-' + await nanoid(11) + '.jpeg';
             const fileUploaded = await wlHelper.uploadWlImage(image, imageFileName);
             if (!fileUploaded) {
                 return res.status(500).json({errorCode: 'IMAGE_UPLOAD_ERROR'});

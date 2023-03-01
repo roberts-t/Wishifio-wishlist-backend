@@ -26,14 +26,14 @@ const signIn = async (req: Request, res: Response, next: NextFunction) => {
                 if (err) {
                     return res.status(500).json({ errorCode: 'AUTH_ERROR' });
                 } else {
-                    // if (req.body && req.body.rememberMe) {
-                    //     // Set session age to 3 weeks if user wants to be remembered
-                    //     try {
-                    //         req.session.cookie.originalMaxAge = 1814400000;
-                    //     } catch (e) {
-                    //         console.log(e);
-                    //     }
-                    // }
+                    if (req.body && req.body.remember) {
+                        // Set session age to one month
+                        try {
+                            req.session.cookie.originalMaxAge = 2629800000;
+                        } catch (e) {
+                            // TODO: Log error
+                        }
+                    }
                     return res.sendStatus(200);
                 }
             });
