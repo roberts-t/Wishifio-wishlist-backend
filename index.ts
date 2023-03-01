@@ -11,7 +11,7 @@ const MongoStore = require('connect-mongo');
 const cookieParser = require('cookie-parser');
 const fileUpload = require("express-fileupload");
 const passport = require('passport');
-// const { doubleCsrf } = require("csrf-csrf");
+const logger = require('./src/helpers/logger.helper');
 
 mongoose.set("strictQuery", false);
 mongoose.connect(process.env.DB_URI, { useNewUrlParser: true});
@@ -59,5 +59,5 @@ app.use('/api', routes);
 app.use('/static', express.static('public'))
 
 app.listen(port, () => {
-    console.log(`[server]: Server is running at http://localhost:${port}`);
+    logger.info(`Server is running on PORT ${port}, ENV: ${process.env.NODE_ENV}`);
 });

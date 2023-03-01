@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-
 const User = require('../models/user.model');
+const logger = require('../helpers/logger.helper');
 
 const updateUser = async (req: Request, res: Response) => {
     const user = req.user;
@@ -14,6 +14,7 @@ const updateUser = async (req: Request, res: Response) => {
         await dbUser.save();
         return res.sendStatus(200);
     } catch (err) {
+        logger.error(err);
         return res.status(500).json({errorCode: 'SERVER_ERROR'});
     }
 }

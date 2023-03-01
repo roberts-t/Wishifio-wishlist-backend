@@ -6,6 +6,7 @@ import { IWishlistItem } from '../models/wishlistItem.model';
 const Wishlist = require('../models/wishlist.model');
 const wlHelper = require('../helpers/wishlist.helper');
 const fs = require('fs');
+const logger = require('../helpers/logger.helper');
 
 
 const createWishListItem = async (req: Request, res: Response) => {
@@ -28,6 +29,7 @@ const createWishListItem = async (req: Request, res: Response) => {
             imageFileName = wishlistHash + '-item-' + await nanoid(11) + '.jpeg';
             const fileUploaded = wlHelper.uploadWlImage(image, imageFileName);
             if (!fileUploaded) {
+                logger.error('Error uploading image');
                 return res.status(500).json({ errorCode: 'IMAGE_UPLOAD_ERROR' });
             }
         }
@@ -45,6 +47,7 @@ const createWishListItem = async (req: Request, res: Response) => {
         await wishlist.save();
         return res.sendStatus(200);
     } catch (err) {
+        logger.error(err);
         return res.status(500).json({ errorCode: 'ITEM_ERROR' });
     }
 }
@@ -66,6 +69,7 @@ const readWishListItem = async (req: Request, res: Response) => {
         }
         return res.status(200).json(wishlistItem);
     } catch (err) {
+        logger.error(err);
         return res.status(500).json({errorCode: 'ITEM_ERROR'});
     }
 }
@@ -111,6 +115,7 @@ const updateWishListItem = async (req: Request, res: Response) => {
             const imageFileName = wishlistHash + '-item-' + await nanoid(11) + '.jpeg';
             const fileUploaded = await wlHelper.uploadWlImage(image, imageFileName);
             if (!fileUploaded) {
+                logger.error('Error uploading image');
                 return res.status(500).json({errorCode: 'IMAGE_UPLOAD_ERROR'});
             }
             wishlistItem.image = imageFileName;
@@ -119,6 +124,7 @@ const updateWishListItem = async (req: Request, res: Response) => {
         await wishlist.save();
         return res.sendStatus(200);
     } catch (err) {
+        logger.error(err);
         return res.status(500).json({errorCode: 'ITEM_ERROR'});
     }
 }
@@ -138,7 +144,7 @@ const deleteWishListItem = async (req: Request, res: Response) => {
             try {
                 await fs.promises.unlink(process.env.USER_IMAGE_PATH + wishlistItem.image);
             } catch (err) {
-                // TODO: Handle error by logging
+                logger.error(err);
             }
         }
         await wishlist.items.pull(wishlistItemId);
@@ -146,6 +152,7 @@ const deleteWishListItem = async (req: Request, res: Response) => {
         await wishlist.save();
         return res.sendStatus(200);
     } catch (err) {
+        logger.error(err);
         return res.status(500).json({errorCode: 'ITEM_ERROR'});
     }
 }

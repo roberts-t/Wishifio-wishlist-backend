@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { nanoid } from 'nanoid/async';
+const logger = require('../helpers/logger.helper');
 
 const User = require('../models/user.model');
 const ResetPassword = require('../models/resetPassword.model');
@@ -25,6 +26,7 @@ const requestResetPassword = async (req: Request, res: Response) => {
         await resetPasswordEntry.save();
         return res.sendStatus(200);
     } catch (e) {
+        logger.error(e);
         return res.status(500).json({ errorCode: 'SERVER_ERROR' });
     }
 }
@@ -56,6 +58,7 @@ const resetPassword = async (req: Request, res: Response) => {
 
         return res.sendStatus(200);
     } catch (e) {
+        logger.error(e);
         return res.status(500).json({ errorCode: 'SERVER_ERROR' });
     }
 }
@@ -79,6 +82,7 @@ const changePassword = async (req: Request, res: Response) => {
         await dbUser.save();
         return res.sendStatus(200);
     } catch (e) {
+        logger.error(e);
         return res.status(500).json({ errorCode: 'SERVER_ERROR' });
     }
 }

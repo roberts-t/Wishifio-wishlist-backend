@@ -6,6 +6,7 @@ import { HydratedDocument } from 'mongoose';
 import { IWishlistItem } from '../models/wishlistItem.model';
 import fs from "fs";
 const sharp = require('sharp');
+const logger = require('../helpers/logger.helper');
 
 const getWlItemRequestValues = (req: Request) => {
     const wishlistHash = req.params.hash;
@@ -41,7 +42,7 @@ const uploadWlImage = async (image: UploadedFile, imageFileName: string) => {
             .toFile(imageDir + imageFileName);
         return true;
     } catch (e) {
-        // TODO: Log error
+        logger.error(e);
         return false;
     }
 }
@@ -65,6 +66,7 @@ const getWlItem = async (wishlistId: string, wishlistItemId: string, user: any) 
         }
     }
     catch (e) {
+        logger.error(e);
         return {
             errorCode: 'ITEM_ERROR'
         };
@@ -97,6 +99,7 @@ const getWishlist = async (wishlistHash: string, user: any, matchUser: boolean =
         }
     }
     catch (e) {
+        logger.error(e);
         return {
             error: {
                 errorCode: 500,
@@ -114,7 +117,7 @@ const deleteWlImage = async (imagePath: string) => {
     try {
         await fs.promises.unlink(imagePath);
     } catch (err) {
-        // TODO: Handle error by logging
+        logger.error(err);
     }
 }
 
