@@ -3,6 +3,7 @@ node_modules
 build
 logs
 dist
+public/images/user/*
 npm-debug.log
 .nyc
 .env

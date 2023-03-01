@@ -6,6 +6,7 @@ import { nanoid } from 'nanoid/async';
 import { IWishlistItem } from '../models/wishlistItem.model';
 const wlHelper = require('../helpers/wishlist.helper');
 const fs = require('fs');
+const sharp = require('sharp');
 
 
 const getAllWishlists = async (req: Request, res: Response) => {
@@ -54,12 +55,15 @@ const createWishlist = async (req: Request, res: Response) => {
         const image = req?.files?.image as UploadedFile;
         const user = req.user;
 
-        const imageDir = 'public/images/user/';
+        const imageDir = process.env.USER_IMAGE_PATH || 'public/images/user/';
         let imageFileName = "";
 
         if (image) {
             imageFileName = 'wishlist-' + await nanoid(11) + '.' + image.mimetype.split('/')[1];
-            await image.mv(imageDir + imageFileName);
+            if (!fs.existsSync(imageDir)) {
+                await fs.promises.mkdir(imageDir, {recursive: true});
+            }
+            await sharp(image.data).resize(96, 96).toFile(imageDir + imageFileName);
         }
 
         const newWishList = new Wishlist({
@@ -73,6 +77,7 @@ const createWishlist = async (req: Request, res: Response) => {
         await newWishList.save();
         return res.status(200).json({ hash: newWishList.hash });
     } catch (err) {
+        console.log(err);
         return res.status(500).json({ errorCode: "WISHLIST_ERROR" });
     }
 }

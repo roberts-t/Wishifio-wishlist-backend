@@ -5,6 +5,7 @@ import { IWishlist } from '../models/wishlist.model';
 import { HydratedDocument } from 'mongoose';
 import { IWishlistItem } from '../models/wishlistItem.model';
 import fs from "fs";
+const sharp = require('sharp');
 
 const getWlItemRequestValues = (req: Request) => {
     const wishlistHash = req.params.hash;
@@ -29,9 +30,15 @@ const getWlItemRequestValues = (req: Request) => {
 }
 
 const uploadWlImage = async (image: UploadedFile, imageFileName: string) => {
-    const imageDir = process.env.USER_IMAGE_PATH;
+    const imageDir = process.env.USER_IMAGE_PATH || 'public/images/user/';
     try {
-        await image.mv(imageDir + imageFileName);
+        if (!fs.existsSync(imageDir)) {
+            await fs.promises.mkdir(imageDir, {recursive: true});
+        }
+        await sharp(image.data)
+            .resize(256, 192)
+            .jpeg({quality: 100})
+            .toFile(imageDir + imageFileName);
         return true;
     } catch (e) {
         // TODO: Log error
